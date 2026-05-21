@@ -23,12 +23,15 @@ func main() {
 	}
 
 	adminRepo := repository.NewAdminRepository(database.DB)
+	teamRepo := repository.NewTeamRepository(database.DB)
 
 	authSvc := service.NewAuthService(adminRepo)
+	teamSvc := service.NewTeamService(teamRepo)
 
 	authH := handler.NewAuthHandler(authSvc)
+	teamH := handler.NewTeamHandler(teamSvc)
 
-	r := router.Setup(authH)
+	r := router.Setup(authH, teamH)
 
 	addr := fmt.Sprintf(":%s", config.App.Port)
 	log.Printf("Server running on %s", addr)
