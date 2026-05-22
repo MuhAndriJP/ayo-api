@@ -10,7 +10,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Setup(authH *handler.AuthHandler, teamH *handler.TeamHandler) *gin.Engine {
+func Setup(
+	authH *handler.AuthHandler,
+	teamH *handler.TeamHandler,
+	playerH *handler.PlayerHandler,
+	matchH *handler.MatchHandler,
+) *gin.Engine {
 	r := gin.New()
 	r.Use(gin.Recovery())
 
@@ -32,6 +37,25 @@ func Setup(authH *handler.AuthHandler, teamH *handler.TeamHandler) *gin.Engine {
 	teams.POST("/", teamH.Create)
 	teams.PUT("/:id", teamH.Update)
 	teams.DELETE("/:id", teamH.Delete)
+
+	teamPlayers := teams.Group("/:id/players")
+	teamPlayers.GET("/", playerH.ListByTeam)
+	teamPlayers.POST("/", playerH.Create)
+
+	players := api.Group("/players")
+	players.GET("/:id", playerH.Get)
+	players.PUT("/:id", playerH.Update)
+	players.DELETE("/:id", playerH.Delete)
+
+	matches := api.Group("/matches")
+	matches.GET("/", matchH.List)
+	matches.GET("/:id", matchH.Get)
+	matches.POST("/", matchH.Create)
+	matches.PUT("/:id", matchH.Update)
+	matches.DELETE("/:id", matchH.Delete)
+	matches.POST("/:id/result", matchH.SaveResult)
+	matches.PUT("/:id/result", matchH.SaveResult)
+	matches.GET("/:id/report", matchH.GetReport)
 
 	return r
 }

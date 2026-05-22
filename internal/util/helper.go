@@ -17,8 +17,9 @@ const (
 	DateLayout     = "2006-01-02"
 	DateTimeLayout = "2006-01-02T15:04:05Z07:00"
 
-	ParamID  = "id"
-	FormLogo = "logo"
+	ParamID     = "id"
+	ParamTeamID = "teamId"
+	FormLogo    = "logo"
 
 	MsgOK              = "success"
 	MsgValidasiGagal   = "validasi gagal"
@@ -27,11 +28,17 @@ const (
 )
 
 var (
-	ErrTooManyRequests = errors.New("terlalu banyak percobaan login, coba lagi nanti")
-	ErrBadCredentials  = errors.New("username atau password salah")
-	ErrLogoTooLarge    = errors.New("ukuran logo maksimal 2 MB")
-	ErrLogoInvalidType = errors.New("format logo harus JPEG atau PNG")
-	ErrInvalidID       = errors.New("id tidak valid")
+	ErrTooManyRequests  = errors.New("terlalu banyak percobaan login, coba lagi nanti")
+	ErrBadCredentials   = errors.New("username atau password salah")
+	ErrJerseyExists     = errors.New("nomor punggung sudah dipakai pemain lain di tim ini")
+	ErrSameTeam         = errors.New("tim home dan away tidak boleh sama")
+	ErrMatchFinished    = errors.New("pertandingan yang sudah selesai tidak dapat diubah jadwalnya")
+	ErrPlayerNotInMatch = errors.New("pemain bukan anggota tim yang bertanding")
+	ErrMatchNotDone     = errors.New("pertandingan belum selesai")
+	ErrLogoTooLarge     = errors.New("ukuran logo maksimal 2 MB")
+	ErrLogoInvalidType  = errors.New("format logo harus JPEG atau PNG")
+	ErrInvalidID        = errors.New("id tidak valid")
+	ErrInvalidDate      = errors.New("format tanggal harus YYYY-MM-DD")
 )
 
 func ErrNotFound(err error, entity string) error {
@@ -65,6 +72,15 @@ func BuildOrderClause(sortBy, sortDir string) string {
 	return by + " " + direction
 }
 
+func ParseDate(s string) (time.Time, error) {
+	t, err := time.Parse(DateLayout, s)
+	if err != nil {
+		return time.Time{}, ErrInvalidDate
+	}
+
+	return t, nil
+}
+
 func ParseID(c *gin.Context, param string) (int64, error) {
 	id, err := strconv.ParseInt(c.Param(param), 10, 64)
 	if err != nil {
@@ -72,6 +88,14 @@ func ParseID(c *gin.Context, param string) (int64, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+func ParseOptionalDate(s string) (time.Time, error) {
+	if s == "" {
+		return time.Time{}, nil
+	}
+
+	return ParseDate(s)
 }
 
 func FormatDate(t time.Time) string {
