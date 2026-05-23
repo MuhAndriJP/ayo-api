@@ -14,6 +14,7 @@ type Config struct {
 	DBPassword string
 	DBName     string
 	JWTSecret  string
+	Host       string
 	Port       string
 	UploadDir  string
 }
@@ -27,9 +28,10 @@ func Load() error {
 		DBHost:     getEnv("DB_HOST", "127.0.0.1"),
 		DBPort:     getEnv("DB_PORT", "3306"),
 		DBUser:     getEnv("DB_USER", "root"),
-		DBPassword: getEnv("DB_PASSWORD", ""),
+		DBPassword: getEnv("DB_PASSWORD", "root"),
 		DBName:     getEnv("DB_NAME", "ayo_db"),
-		JWTSecret:  getEnv("JWT_SECRET", "change-me-in-production"),
+		JWTSecret:  getEnv("JWT_SECRET", "ayo-secret"),
+		Host:       getEnv("HOST", "http://localhost"),
 		Port:       getEnv("PORT", "8080"),
 		UploadDir:  getEnv("UPLOAD_DIR", "uploads"),
 	}

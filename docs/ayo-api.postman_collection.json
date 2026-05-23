@@ -1,0 +1,285 @@
+{
+  "info": {
+    "name": "AYO API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "token",   "value": "",                      "type": "string" },
+    { "key": "teamId",  "value": "1",                     "type": "string" },
+    { "key": "playerId","value": "1",                     "type": "string" },
+    { "key": "matchId", "value": "1",                     "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var res = pm.response.json();",
+                  "if (res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "List Teams",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/teams/?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "teams", ""],
+              "query": [
+                { "key": "page",     "value": "1" },
+                { "key": "limit",    "value": "10" },
+                { "key": "city",     "value": "", "disabled": true },
+                { "key": "search",   "value": "", "disabled": true },
+                { "key": "sort_by",  "value": "", "disabled": true },
+                { "key": "sort_dir", "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Team",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/teams/{{teamId}}"
+          }
+        },
+        {
+          "name": "Create Team",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/teams/",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name",         "value": "Persija Jakarta",  "type": "text" },
+                { "key": "founded_year", "value": "1928",             "type": "text" },
+                { "key": "address",      "value": "Jl. Gelora No.1",  "type": "text" },
+                { "key": "city",         "value": "Jakarta",          "type": "text" },
+                { "key": "logo",         "type": "file", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Team",
+          "request": {
+            "method": "PUT",
+            "url": "{{baseUrl}}/api/v1/teams/{{teamId}}",
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "name", "value": "Persija Jakarta Updated", "type": "text" },
+                { "key": "city", "value": "Jakarta Pusat",           "type": "text" },
+                { "key": "logo", "type": "file", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Team",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/teams/{{teamId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Players",
+      "item": [
+        {
+          "name": "List Players by Team",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/teams/{{teamId}}/players/?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "teams", "{{teamId}}", "players", ""],
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Player",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/teams/{{teamId}}/players/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bambang Pamungkas\",\n  \"height_cm\": 175,\n  \"weight_kg\": 70,\n  \"position\": \"penyerang\",\n  \"jersey_number\": 20\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Player",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/players/{{playerId}}"
+          }
+        },
+        {
+          "name": "Update Player",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/players/{{playerId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bambang Pamungkas\",\n  \"height_cm\": 176,\n  \"weight_kg\": 72,\n  \"position\": \"penyerang\",\n  \"jersey_number\": 9\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Player",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/players/{{playerId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Matches",
+      "item": [
+        {
+          "name": "List Matches",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/matches/?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "matches", ""],
+              "query": [
+                { "key": "page",    "value": "1" },
+                { "key": "limit",   "value": "10" },
+                { "key": "from",    "value": "", "disabled": true },
+                { "key": "to",      "value": "", "disabled": true },
+                { "key": "team_id", "value": "", "disabled": true },
+                { "key": "status",  "value": "", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Match",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/matches/{{matchId}}"
+          }
+        },
+        {
+          "name": "Create Match",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/matches/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_date\": \"2025-06-01\",\n  \"match_time\": \"19:00\",\n  \"home_team_id\": 1,\n  \"away_team_id\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Match",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/matches/{{matchId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"match_date\": \"2025-06-05\",\n  \"match_time\": \"20:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Match",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/matches/{{matchId}}"
+          }
+        },
+        {
+          "name": "Save Result",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/matches/{{matchId}}/result",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"home_score\": 2,\n  \"away_score\": 1,\n  \"goals\": [\n    { \"player_id\": 1, \"minute\": 23 },\n    { \"player_id\": 1, \"minute\": 67 },\n    { \"player_id\": 3, \"minute\": 45 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Result",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/v1/matches/{{matchId}}/result",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"home_score\": 3,\n  \"away_score\": 1,\n  \"goals\": [\n    { \"player_id\": 1, \"minute\": 23 },\n    { \"player_id\": 1, \"minute\": 67 },\n    { \"player_id\": 2, \"minute\": 80 },\n    { \"player_id\": 3, \"minute\": 45 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Match Report",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/matches/{{matchId}}/report"
+          }
+        }
+      ]
+    }
+  ]
+}

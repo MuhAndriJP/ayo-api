@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"github.com/MuhAndriJP/ayo-api/internal/config"
 	"github.com/MuhAndriJP/ayo-api/internal/model"
 	"github.com/MuhAndriJP/ayo-api/internal/util"
 )
@@ -19,7 +20,7 @@ func TeamListToResponse(teams []model.Team) []*TeamResponse {
 func TeamToResponse(t *model.Team) *TeamResponse {
 	logoURL := ""
 	if t.LogoPath != "" {
-		logoURL = fmt.Sprintf("/uploads/%s", filepath.Base(t.LogoPath))
+		logoURL = fmt.Sprintf("%s:%s/uploads/teams/%s", config.App.Host, config.App.Port, filepath.Base(t.LogoPath))
 	}
 	return &TeamResponse{
 		ID:          int64(t.ID),

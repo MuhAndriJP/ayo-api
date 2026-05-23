@@ -1,0 +1,79 @@
+Table admins {
+  id           int          [pk, increment]
+  username     varchar(100) [unique, not null]
+  password_hash varchar(255) [not null]
+  created_at   datetime
+  updated_at   datetime
+  deleted_at   datetime     [null]
+
+  indexes {
+    username [unique]
+  }
+}
+
+Table teams {
+  id           int          [pk, increment]
+  name         varchar(200) [not null]
+  logo_path    varchar(500) [null]
+  founded_year int          [not null]
+  address      varchar(500)
+  city         varchar(100) [not null]
+  created_at   datetime
+  updated_at   datetime
+  deleted_at   datetime     [null]
+
+  indexes {
+    name
+  }
+}
+
+Table players {
+  id            int          [pk, increment]
+  team_id       int          [not null, ref: > teams.id]
+  name          varchar(200) [not null]
+  height_cm     float        [not null]
+  weight_kg     float        [not null]
+  position      enum('penyerang','gelandang','bertahan','penjaga_gawang') [not null]
+  jersey_number int          [not null]
+  created_at    datetime
+  updated_at    datetime
+  deleted_at    datetime     [null]
+
+  indexes {
+    (team_id, jersey_number) [unique, name: 'idx_player_team_jersey']
+    name
+  }
+}
+
+Table matches {
+  id           int          [pk, increment]
+  match_date   date         [not null]
+  match_time   time         [not null]
+  home_team_id int          [not null, ref: > teams.id]
+  away_team_id int          [not null, ref: > teams.id]
+  home_score   int          [null]
+  away_score   int          [null]
+  status       enum('scheduled','finished') [not null, default: 'scheduled']
+  created_at   datetime
+  updated_at   datetime
+  deleted_at   datetime     [null, note: 'Soft delete']
+
+  indexes {
+    (home_team_id, away_team_id)
+  }
+}
+
+Table goals {
+  id            int [pk, increment]
+  match_id      int [not null, ref: > matches.id]
+  player_id     int [not null, ref: > players.id]
+  minute_scored int [not null, note: '1–130 (extra time)']
+  created_at    datetime
+  updated_at    datetime
+  deleted_at    datetime [null]
+
+  indexes {
+    match_id
+    player_id
+  }
+}
